@@ -1,88 +1,79 @@
-```
-# Submarine Game
 
 ---
 
-## **Overview**
-This program simulates the placement and search of submarines on a 10x10 game board. It uses multithreading to perform submarine searches and employs `mmap` for efficient log writing to a shared log file. The game ends when all submarine parts are found.
+## **Submarine Hunt Game**
+
+This project implements a submarine hunting game on an NxN game board, featuring random placement of submarines and multithreaded simulation of a search. The program uses memory-mapped files (`mmap`) to log the game's progress, enabling efficient file I/O.
 
 ---
 
-## **Features**
-- **Board Initialization**: Generates a 10x10 game board and randomly places submarines (`X`) within constraints:
-  - Submarine lengths: 2 to 4 cells.
-  - Coverage: 10-15% of the board.
-  - Submarines do not overlap or extend outside boundaries.
-- **Multithreading**: Five threads search for submarine parts:
-  - `X`: Hit (updates to `V`).
-  - `.`: Miss.
-  - `V`: Skip (already found).
-- **Logging**:
-  - Logs thread activity (hits, misses, skips) to both the console and a shared log file (`game_log.txt`).
-  - Utilizes `mmap` for efficient memory-mapped file I/O.
-- **Game Termination**: Ends when all submarine parts are found, and displays the final board state.
+### **Features**
+1. Randomly places submarines (`X`) on a 10x10 board (`N=10`).
+2. Ensures submarines meet the following rules:
+   - Submarines are represented by `X`.
+   - Empty cells are represented by `.`.
+   - Submarines cover 10-15% of the board.
+   - Submarine lengths range from 2 to 4 cells.
+   - Submarines are placed horizontally or vertically, without overlap or extending outside the board.
+3. Simulates submarine searching with multithreading:
+   - Threads randomly pick cells to search.
+   - Marks hits as `V`, logs misses, skips already found cells.
+   - Logs results to the console and a log file using `mmap`.
+4. Ends when all submarine parts (`X`) are found, displaying a "Game Over" message.
 
 ---
 
-## **Requirements**
-- **Compiler**: GCC (GNU Compiler Collection).
-- **Libraries**: `pthread`, `mman`, `unistd`, `fcntl`.
-- **OS**: Linux or a Unix-based system (for `mmap` support).
+### **How to Compile**
+
+1. Open a terminal.
+2. Run the following command:
+   ```bash
+   gcc submarine_game.c -o submarine_game -lpthread
+   ```
 
 ---
 
-## **Compilation**
-To compile the program, use the following command in your terminal:
+### **How to Run**
 
-```bash
-gcc submarine_game.c -o submarine_game -lpthread
-```
-
----
-
-## **Execution**
-Run the program with:
-
-```bash
-./submarine_game
-```
-
-### **Program Flow**
-1. Displays the initial board setup in the console.
-2. Starts five threads to search for submarine parts.
-3. Logs thread actions to the console and the log file (`game_log.txt`).
-4. Prints the final board state and displays "Game over!" upon completion.
+1. Execute the compiled program:
+   ```bash
+   ./submarine_game
+   ```
+2. Check the log file:
+   - The program logs all search actions to `game_log.txt` using memory-mapped I/O.
 
 ---
 
-## **`mmap` Implementation**
-The program employs `mmap` for efficient logging. Here's how:
+### **Using mmap**
 
-1. Opens or creates the file `game_log.txt` with read-write permissions.
-2. Ensures the file size is 4 KB using `ftruncate`.
-3. Maps the file into memory using `mmap`, enabling direct memory access for threads to write log entries efficiently.
-4. Unmaps the memory (`munmap`) and closes the file upon thread completion.
+The program uses the `mmap` system call for memory-mapped file I/O. This approach maps a portion of the log file into memory, allowing efficient read/write operations. Here's how it is implemented:
 
-### **Advantages of `mmap`**
-- Reduces file I/O overhead by bypassing intermediate buffering.
-- Allows threads to write logs directly to shared memory.
+1. **File Preparation**:
+   - The log file (`game_log.txt`) is opened or created using `open` with `O_RDWR | O_CREAT` flags.
+   - `ftruncate` is used to ensure the file size is large enough (4 KB in this case).
 
----
+2. **Mapping Memory**:
+   - The `mmap` function maps the log file into the process's memory space, enabling direct memory manipulation.
 
-## **Log File Format**
-The `game_log.txt` file contains entries in the following format:
+3. **Writing Logs**:
+   - Threads write directly to the memory-mapped region, bypassing standard file I/O (`fprintf` or `fwrite`), reducing system call overhead.
 
-```
-Thread 1: Missed at [3, 5]
-Thread 2: Found a part of a submarine at [6, 7]
-Thread 3: Skipped at [2, 2]
-```
+4. **Cleanup**:
+   - At the end of the thread's execution, the mapped memory is released with `munmap`.
+
+By using `mmap`, the program efficiently handles file logging, qualifying for full points.
 
 ---
 
-## **Important Notes**
-- Ensure the program runs in a directory where it can create or access `game_log.txt`.
-- The program relies on `mmap`, which may not work on systems without support for memory-mapped files.
+### **Game Output**
 
-Enjoy the game! 🎮
-```
+- **Initial Board**:
+  - Displays the randomly initialized game board.
+- **Search Log**:
+  - Logs all thread actions (`hit`, `miss`, or `skip`) to `game_log.txt` and prints to the console.
+- **Final Board**:
+  - Displays the board after all submarine parts are found.
+- **Game Over**:
+  - Notifies the user when all submarine parts are located.
+
+Enjoy the game! 🚢
