@@ -1,0 +1,36 @@
+# Compiled object files
+*.o
+
+# Compiled binary files
+submarine
+submarine_game
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*~
+
+# Dependency or build directories
+build/
+cmake-build-debug/
+dist/
+
+# Docker intermediate files
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Generated files or caches
+game_log.txt
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Git-related
+*.lock
