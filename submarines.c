@@ -22,7 +22,7 @@ typedef struct {
 
 typedef struct {
     GameState *game;
-    int thread_id; // Unique ID for each thread
+    int thread_id; 
 } ThreadData;
 
 // Function to initialize the board
@@ -188,7 +188,7 @@ int main() {
 
     for (int i = 0; i < THREAD_COUNT; i++) {
         thread_data[i].game = &game;
-        thread_data[i].thread_id = i + 1; // Assign unique thread ID
+        thread_data[i].thread_id = i + 1; 
         pthread_create(&threads[i], NULL, submarine_search, &thread_data[i]);
     }
 
